@@ -1,0 +1,16 @@
+C:\Users\ГазиевА\source\repos\Exda\Exda\bin\Debug\Exda.exe.config
+C:\Users\ГазиевА\source\repos\Exda\Exda\bin\Debug\Exda.exe
+C:\Users\ГазиевА\source\repos\Exda\Exda\bin\Debug\Exda.pdb
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exam.csproj.AssemblyReference.cache
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exam.csproj.SuggestedBindingRedirects.cache
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\MainWindow.g.cs
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\App.g.cs
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exda_MarkupCompile.cache
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exda_MarkupCompile.lref
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\MainWindow.baml
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exda.g.resources
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exda.Properties.Resources.resources
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exam.csproj.GenerateResource.cache
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exam.csproj.CoreCompileInputs.cache
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exda.exe
+C:\Users\ГазиевА\source\repos\Exda\Exda\obj\Debug\Exda.pdb
