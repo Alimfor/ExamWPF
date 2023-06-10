@@ -5,96 +5,161 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Exda"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Window.Resources>
-        <Style TargetType="TextBox">
-            <Setter Property="Width" Value="100"/>
-            <Setter Property="Height" Value="20"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Bottom"/>
-            <Setter Property="Margin" Value="10 10"/>
-        </Style>
-        <Style TargetType="Label">
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-        </Style>
-    </Window.Resources>
-    <Grid ShowGridLines="True">
+        Title="MainWindow" MinHeight="450" MinWidth="800">
+
+    <Grid Background="Beige">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-
-        <Menu Grid.Row="0" Grid.Column="0" Height="25" VerticalAlignment="Top">
-            <MenuItem Header="File">
-                <MenuItem Header="Тестирование" ></MenuItem>
-                <MenuItem Header="Загрузить отчет"/>
+        <!---->
+        <!---->
+        <Menu x:Name="menu" Grid.Row="0" MinHeight="25" MinWidth="100" HorizontalAlignment="Left" FontSize="15">
+            <MenuItem Header="File" MinHeight="25" MinWidth="100">
+                <MenuItem Header="Тестирование" Click="MenuItem_Click" />
+                <MenuItem Header="Загрузить отчет" Click="MenuItem_Click" />
             </MenuItem>
         </Menu>
-
         <!---->
-        <Label Grid.Row="1" Grid.Column="0" Content="Введите имя:"/>
-        <TextBox x:Name="tbName" Grid.Row="1" Grid.Column="0" Width="200"/>
-        
-        <Label Grid.Row="1" Grid.Column="1" Content="Введите фамилию:"/>
-        <TextBox x:Name="tbLastName" Grid.Row="1" Grid.Column="1" Width="200" />
         <!---->
+        <!---->
+        <Grid x:Name="testingGrid" Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+
+            <!---->
+            <Label Grid.Row="0" Grid.Column="0" Content="Введите имя:"/>
+            <TextBox x:Name="tbName" Grid.Row="0" Grid.Column="0" MinWidth="200" PreviewTextInput="TextBox_PreviewTextInput"/>
         
-        <Label Grid.Row="2" Grid.Column="0" Content="1) Сколько материков на Земле?"/>
-        <TextBox x:Name="tb1" Grid.Row="2" Grid.Column="0"/>
+            <Label Grid.Row="0" Grid.Column="1" Content="Введите фамилию:"/>
+            <TextBox x:Name="tbLastName" Grid.Row="0" Grid.Column="1" MinWidth="200" PreviewTextInput="TextBox_PreviewTextInput"/>
+            <!---->
+        
+            <Label Grid.Row="1" Grid.Column="0" Content="1) Сколько материков на Земле?"/>
+            <TextBox x:Name="tb1" Grid.Row="1" Grid.Column="0" PreviewTextInput="TextBox_PreviewNumericInput">
+                <TextBox.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Введите число"/>
+                    </ToolTip>
+                </TextBox.ToolTip>
+            </TextBox>
 
-        <Label Grid.Row="2" Grid.Column="1" Content="2) Сколько планет в солнечной системе?"/>
-        <TextBox x:Name="tb2" Grid.Row="2" Grid.Column="1"/>
+            <Label Grid.Row="1" Grid.Column="1" Content="2) Сколько планет в солнечной системе?"/>
+            <TextBox x:Name="tb2" Grid.Row="1" Grid.Column="1" PreviewTextInput="TextBox_PreviewNumericInput">
+                <TextBox.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Введите число"/>
+                    </ToolTip>
+                </TextBox.ToolTip>
+            </TextBox>
 
-        <Label Grid.Row="3" Grid.Column="0" Content="3) Спутник земли?"/>
-        <TextBox x:Name="tb3" Grid.Row="3" Grid.Column="0"/>
+            <Label Grid.Row="2" Grid.Column="0" Content="3) Спутник земли?"/>
+            <TextBox x:Name="tb3" Grid.Row="2" Grid.Column="0" PreviewTextInput="TextBox_PreviewTextInput">
+                <TextBox.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Введите строку"/>
+                    </ToolTip>
+                </TextBox.ToolTip>
+            </TextBox>
 
-        <Label Grid.Row="3" Grid.Column="1" Content="4) День защиты детей в июне?"/>
-        <TextBox x:Name="tb4" Grid.Row="3" Grid.Column="1"/>
+            <Label Grid.Row="2" Grid.Column="1" Content="4) День защиты детей в июне - "/>
+            <TextBox x:Name="tb4" Grid.Row="2" Grid.Column="1" PreviewTextInput="TextBox_PreviewNumericInput">
+                <TextBox.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Введите число"/>
+                    </ToolTip>
+                </TextBox.ToolTip>
+            </TextBox>
 
-        <Label Grid.Row="4" Grid.Column="0" Content="5) Фамилия первого космонавта?"/>
-        <TextBox x:Name="tb5" Grid.Row="4" Grid.Column="0"/>
+            <Label Grid.Row="3" Grid.Column="0" Content="5) Фамилия первого космонавта?" />
+            <TextBox x:Name="tb5" Grid.Row="3" Grid.Column="0" PreviewTextInput="TextBox_PreviewTextInput">
+                <TextBox.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Введите строку"/>
+                    </ToolTip>
+                </TextBox.ToolTip>
+            </TextBox>
 
-        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Content="Завершить" FontSize="20" Click="Button_Click"/>
+            <!---->
+            <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Content="Завершить" FontSize="20" Click="LoadBtn_Click"/>
+            <!---->
+            <GroupBox x:Name="gb" Grid.Row="0" Grid.Column="2" Grid.RowSpan="5" Background="CornflowerBlue" Visibility="Hidden">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition Height="1.7*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
 
-        <GroupBox Grid.Row="1" Grid.Column="2" Grid.RowSpan="5" Background="CornflowerBlue" Visibility="Visible">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Content="вопросов всего:"/>
+                    <Label x:Name="totalQuesLabel" Grid.Row="0" Grid.Column="1"/>
 
-                <Label Grid.Row="0" Content="вопросов всего:"/>
-                <Label x:Name="totalQuesLabel" Grid.Row="0" Grid.Column="1"/>
-                
-                <Label Grid.Row="1" Content="правильных ответов:"/>
-                <Label x:Name="caLabel" Grid.Row="1" Grid.Column="1"/>
-                
-                <Label Grid.Row="2" Content="затраченное время:"/>
-                <Label x:Name="timeLabel" Grid.Row="2" Grid.Column="1"/>
+                    <Label Grid.Row="1" Content="правильных ответов:"/>
+                    <Label x:Name="caLabel" Grid.Row="1" Grid.Column="1"/>
 
-                <Label Grid.Row="3" Content="процент выполнения:" Margin="0 -10"/>
-                <Label x:Name="procentLabel" Grid.Row="3" Grid.Column="1"/>
-                
-            </Grid>
-        </GroupBox>
+                    <Label Grid.Row="2" Content="затраченное время:"/>
+                    <Label x:Name="timeLabel" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="2" Grid.Column="1" Margin="20 0" Content="сек"/>
+
+                    <Label Grid.Row="3" Content="процент выполнения:" />
+                    <Label x:Name="procentLabel" Grid.Row="3" Grid.Column="1" VerticalAlignment="Top"/>
+
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <!---->
+        <!---->
+        <!---->
+        <Grid x:Name="reportGrid" Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200"/>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <!---->
+            <Label Grid.Row="0" Content="Введите начальную дату:" HorizontalAlignment="Center"/>
+            <TextBox x:Name="startDateTb" Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 30">
+                <TextBox.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Введите дату в формате: yyyy-mm-dd"/>
+                    </ToolTip>
+                </TextBox.ToolTip>
+            </TextBox>
+            
+            <Label Grid.Row="0" Content="Введите конечную дату:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 50"/>
+            <TextBox x:Name="endDateTb" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBox.ToolTip>
+                    <ToolTip>
+                        <TextBlock Text="Введите дату в формате: yyyy-mm-dd"/>
+                    </ToolTip>
+                </TextBox.ToolTip>
+            </TextBox>
+            
+            <Label Grid.Row="0" Content="Выберите расширение файла:" HorizontalAlignment="Center" VerticalAlignment="Bottom"  Margin="0 50"/>
+            <ComboBox x:Name="fileTypeCb" Grid.Row="0" Height="20" Width="100" VerticalAlignment="Bottom" Margin="0 30">
+                <ComboBoxItem>csv</ComboBoxItem>
+                <ComboBoxItem>exel</ComboBoxItem>
+            </ComboBox>
+            
+            <!---->
+            <Button Grid.Row="1" MinHeight="100" MinWidth="300" VerticalAlignment="Top" HorizontalAlignment="Center" Content="Загрузить отчет" FontSize="30" Click="ReportBtn_Click"/>
+        </Grid>
     </Grid>
 </Window>

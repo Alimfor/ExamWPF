@@ -1,6 +1,9 @@
 ﻿using CsvHelper;
+using Exda.ReportFile;
+using Exda.WorkingWithDB;
 using OfficeOpenXml;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -8,6 +11,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,6 +32,8 @@ namespace Exda
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DateRange dateRange;
+        private WorkingWithUser working;
 
         private DispatcherTimer timer;
         private int elapsedSeconds;
@@ -35,161 +41,113 @@ namespace Exda
         public MainWindow()
         {
             InitializeComponent();
-        }
 
+            dateRange = new DateRange();
+            elapsedSeconds = 0;
+        }
 
         private void StartTimer()
         {
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += Timer_Tick;
+            if (elapsedSeconds == 0)
+            {
+                dateRange.startDate = DateTime.Now;
+            }
 
-            elapsedSeconds = 0;
+            timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            timer.Tick += Timer_Tick;
 
             timer.Start();
         }
-
-        private void Timer_Tick(object sender, EventArgs e) => elapsedSeconds++;
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void StopTimer()
         {
-            if (IsEmptyFields())
-            {
-                MessageBox.Show("Вы не ввели данные");
-                return;
-            }
+            if (timer == null) return;
+
             timer.Stop();
+            dateRange.endDate = DateTime.Now;
+        }
+        private void Timer_Tick(object sender, EventArgs e) => elapsedSeconds++;
 
-            WriteUserAnswer();
-            using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["conStr"].ConnectionString))
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (IsNumericInput(e.Text))
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("CheckUserAnswers", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-                    {
-                        DataTable resultsTable = new DataTable();
-                        adapter.Fill(resultsTable);
-
-                        caLabel.Content = resultsTable.Compute("COUNT(Result)", "Result = 'Правильно'");
-                        totalQuesLabel.Content = resultsTable.Rows.Count;
-                        procentLabel.Content = int.Parse((string)caLabel.Content) / int.Parse((string)totalQuesLabel.Content);
-                        timeLabel.Content = elapsedSeconds;
-                    }
-                }
+                e.Handled = true;
+            }
+        }
+        private void TextBox_PreviewNumericInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!IsNumericInput(e.Text))
+            {
+                e.Handled = true;
             }
         }
 
-        private void WriteUserAnswer()
+        private bool IsNumericInput(string text) => int.TryParse(text, out _);
+
+        private void LoadBtn_Click(object sender, RoutedEventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["conStr"].ConnectionString))
-            {
-                connection.Open();
+            StopTimer();
+            working = new WorkingWithUser(dateRange);
 
-                int count = 1;
-                while(count < 6)
-                {
-                    string query = "INSERT INTO UserAnswers (QuestionId, UserAnswer) VALUES (@QuestionId, @UserAnswer)";
+            working.WriteInfoAboutUser(tbLastName, tbName);
+            working.WriteUserAnswer(testingGrid);
+            working.Check();
 
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@QuestionId", count);
-                        command.Parameters.AddWithValue("@UserAnswer", $"tb{count}.Text");
+            ShowUserStatistics(working.GetCheckedAnswer());
 
-                        command.ExecuteNonQuery();
-                    }
-                    count++;
-                }
-            }
+            gb.Visibility = Visibility.Visible;
         }
 
-        private void GenerateCsvReport(string beginDate, string endDate)
+        private void ShowUserStatistics(DataTable resultsTable)
         {
-            DataTable resultsTable = GetSurveyResults(beginDate, endDate);
+            double correctAnswers = int.Parse(resultsTable.Compute("COUNT(Result)", "Result = 'Правильно'").ToString());
+            int totalQuestions = resultsTable.Rows.Count;
+            double procent = correctAnswers / totalQuestions * 100;
 
-            // Создание объекта StreamWriter для записи в файл CSV
-            using (var writer = new StreamWriter("report.csv"))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            {
-                // Запись заголовков столбцов
-                csv.WriteField("Дата_теста");
-                csv.WriteField("ФИО");
-                csv.WriteField("результат_в_%");
-                csv.NextRecord();
+            caLabel.Content = correctAnswers;
+            totalQuesLabel.Content = totalQuestions;
+            procentLabel.Content = procent;
+            timeLabel.Content = elapsedSeconds;
 
-                // Запись данных по результатам анкетирования
-                foreach (DataRow row in resultsTable.Rows)
-                {
-                    csv.WriteField(row["Дата_теста"]);
-                    csv.WriteField(row["ФИО"]);
-                    csv.WriteField(row["результат_в_%"]);
-                    csv.NextRecord();
-                }
-            }
+            working.UpdateResultInProcent(procent);
         }
 
-        private void GenerateExcelReport(string beginDate, string endDate)
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            // Получение результатов анкетирования из базы данных
-            DataTable resultsTable = GetSurveyResults(beginDate, endDate);
+            MenuItem menuItem = (MenuItem)sender;
 
-            // Создание нового пакета Excel
-            using (var package = new ExcelPackage())
+            if (menuItem.Header.ToString().Equals("Тестирование"))
             {
-                // Создание нового листа в пакете
-                var worksheet = package.Workbook.Worksheets.Add("Report");
-
-                // Запись заголовков столбцов
-                worksheet.Cells["A1"].Value = "Дата_теста";
-                worksheet.Cells["B1"].Value = "ФИО";
-                worksheet.Cells["C1"].Value = "результат_в_%";
-
-                // Запись данных по результатам анкетирования
-                int rowIndex = 2;
-                foreach (DataRow row in resultsTable.Rows)
-                {
-                    worksheet.Cells[$"A{rowIndex}"].Value = row["Дата_теста"];
-                    worksheet.Cells[$"B{rowIndex}"].Value = row["ФИО"];
-                    worksheet.Cells[$"C{rowIndex}"].Value = row["результат_в_%"];
-                    rowIndex++;
-                }
-
-                File.WriteAllBytes("report.xlsx", package.GetAsByteArray());
+                testingGrid.Visibility = Visibility.Visible;
+                StartTimer();
+                reportGrid.Visibility = Visibility.Collapsed;
+            }
+            else if (menuItem.Header.ToString().Equals("Загрузить отчет"))
+            {
+                StopTimer();
+                testingGrid.Visibility = Visibility.Collapsed;
+                reportGrid.Visibility = Visibility.Visible;
             }
         }
-
-        private DataTable GetSurveyResults(string beginDate, string endDate)
+        private void ReportBtn_Click(object sender, RoutedEventArgs e)
         {
-            DataTable resultsTable = new DataTable();
+            IFileExtensions file = new Report();
 
-            using (SqlConnection connection = new SqlConnection("YourConnectionString"))
+            if (fileTypeCb.SelectedItem != null)
             {
-                connection.Open();
+                ComboBoxItem item = fileTypeCb.SelectedItem as ComboBoxItem;
+                string selectedFileType = item.Content.ToString();
 
-                string query = "SELECT Дата_теста, ФИО, результат_в_% FROM YourTable " +
-                               "WHERE Дата_теста >= @BeginDate AND Дата_теста <= @EndDate";
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@BeginDate", beginDate);
-                command.Parameters.AddWithValue("@EndDate", endDate);
+                if (selectedFileType.Equals("csv"))  
+                    file.GenerateCsvReport(startDateTb.Text, endDateTb.Text);
+                else 
+                    file.GenerateExcelReport(startDateTb.Text, endDateTb.Text);
 
-                // Выполнение команды SQL и заполнение таблицы результатами
-                SqlDataAdapter adapter = new SqlDataAdapter(command);
-                adapter.Fill(resultsTable);
+                MessageBox.Show("Saccessful", "Отчет успешно загржен");
             }
-
-            return resultsTable;
-        }
-        private bool IsEmptyFields()
-        {
-            return tbName.Text.Equals("") ||
-                   tbLastName.Text.Equals("") ||
-                   tb1.Text.Equals("") ||
-                   tb2.Text.Equals("") ||
-                   tb3.Text.Equals("") ||
-                   tb4.Text.Equals("") ||
-                   tb5.Text.Equals("");
         }
     }
 }
