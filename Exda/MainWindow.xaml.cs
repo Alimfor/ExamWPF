@@ -45,7 +45,6 @@ namespace Exda
             dateRange = new DateRange();
             elapsedSeconds = 0;
         }
-
         private void StartTimer()
         {
             if (elapsedSeconds == 0)
@@ -70,23 +69,6 @@ namespace Exda
         }
         private void Timer_Tick(object sender, EventArgs e) => elapsedSeconds++;
 
-        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            if (IsNumericInput(e.Text))
-            {
-                e.Handled = true;
-            }
-        }
-        private void TextBox_PreviewNumericInput(object sender, TextCompositionEventArgs e)
-        {
-            if (!IsNumericInput(e.Text))
-            {
-                e.Handled = true;
-            }
-        }
-
-        private bool IsNumericInput(string text) => int.TryParse(text, out _);
-
         private void LoadBtn_Click(object sender, RoutedEventArgs e)
         {
             StopTimer();
@@ -100,21 +82,6 @@ namespace Exda
 
             gb.Visibility = Visibility.Visible;
         }
-
-        private void ShowUserStatistics(DataTable resultsTable)
-        {
-            double correctAnswers = int.Parse(resultsTable.Compute("COUNT(Result)", "Result = 'Правильно'").ToString());
-            int totalQuestions = resultsTable.Rows.Count;
-            double procent = correctAnswers / totalQuestions * 100;
-
-            caLabel.Content = correctAnswers;
-            totalQuesLabel.Content = totalQuestions;
-            procentLabel.Content = procent;
-            timeLabel.Content = elapsedSeconds;
-
-            working.UpdateResultInProcent(procent);
-        }
-
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             MenuItem menuItem = (MenuItem)sender;
@@ -149,5 +116,37 @@ namespace Exda
                 MessageBox.Show("Saccessful", "Отчет успешно загржен");
             }
         }
+
+        private void ShowUserStatistics(DataTable resultsTable)
+        {
+            double correctAnswers = int.Parse(resultsTable.Compute("COUNT(Result)", "Result = 'Правильно'").ToString());
+            int totalQuestions = resultsTable.Rows.Count;
+            double procent = correctAnswers / totalQuestions * 100;
+
+            caLabel.Content = correctAnswers;
+            totalQuesLabel.Content = totalQuestions;
+            procentLabel.Content = procent;
+            timeLabel.Content = elapsedSeconds;
+
+            working.UpdateResultInProcent(procent);
+        }
+
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (IsNumericInput(e.Text))
+            {
+                e.Handled = true;
+            }
+        }
+        private void TextBox_PreviewNumericInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!IsNumericInput(e.Text))
+            {
+                e.Handled = true;
+            }
+        }
+        private bool IsNumericInput(string text) => int.TryParse(text, out _);
+
+
     }
 }
